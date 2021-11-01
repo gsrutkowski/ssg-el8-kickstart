@@ -118,6 +118,7 @@ echo -n "Modifying RHEL DVD Image..."
 sed -i "s/8.X/$RHEL_VERSION/g" $DIR/config/isolinux/isolinux.cfg
 sed -i "s/8.X/$RHEL_VERSION/g" $DIR/config/EFI/BOOT/grub.cfg
 cp -a $DIR/config/* $DIR/rhel-dvd/
+cp -a $DIR/.treeinfo $DIR/rhel-dvd/
 if [[ $MINOR -ge 3 ]]; then
 	rm -f $DIR/rhel-dvd/hardening/openscap*rpm 
 fi
