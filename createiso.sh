@@ -137,7 +137,10 @@ echo "Signing RHEL DVD Image..."
 /usr/bin/isohybrid --uefi $DIR/ssg-rhel-$RHEL_VERSION.iso &> /dev/null
 /usr/bin/implantisomd5 $DIR/ssg-rhel-$RHEL_VERSION.iso
 echo "Done."
-
+if [[ `pwd |grep home | wc -l` = 1 ]]; then
+	OWN=$(pwd | awk -F / '{print $3}')
+	chown $OWN:$OWN $DIR/*
+fi
 echo "DVD Created. [ssg-rhel-$RHEL_VERSION.iso]"
 
 exit 0
