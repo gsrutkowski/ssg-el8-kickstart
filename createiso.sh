@@ -10,7 +10,7 @@
 # Copyright: Red Hat, (c) 2014
 # Version: 1.2
 # License: Apache License, Version 2.0
-# Description: Kickstart Installation of RHEL 7 with DISA STIG 
+# Description: Kickstart Installation of RHEL 8 with DISA STIG 
 ###############################################################################
 
 # GLOBAL VARIABLES
@@ -19,11 +19,11 @@ DIR=`pwd`
 # USAGE STATEMENT
 function usage() {
 cat << EOF
-usage: $0 rhel-server-7.X-x86_64-dvd.iso
+usage: $0 rhel-server-8.X-x86_64-dvd.iso
 
-SCAP Security Guide RHEL Kickstart RHEL 7.4+
+SCAP Security Guide RHEL Kickstart RHEL 8.4+
 
-Customizes a RHEL 7.4+ x86_64 Server or Workstation DVD to install
+Customizes a RHEL 8.4+ x86_64 Server or Workstation DVD to install
 with the following hardening:
 
   - SCAP Security Guide (SSG) for Red Hat Enterprise Linux
@@ -80,19 +80,19 @@ if [[ $? -eq 0 ]]; then
 	mkdir $DIR/rhel-dvd
 	mount -o loop $1 /rhel
 	echo "Done."
-	# Tests DVD for RHEL 7.4+
+	# Tests DVD for RHEL 8.4+
 	if [ -e /rhel/.discinfo ]; then
 		RHEL_VERSION=$(grep "Red Hat" /rhel/.discinfo | awk -F ' ' '{ print $5 }')
 		MAJOR=$(echo $RHEL_VERSION | awk -F '.' '{ print $1 }')
 		MINOR=$(echo $RHEL_VERSION | awk -F '.' -F ' ' '{ print $2 }')
-		if [[ $MAJOR -ne 7 ]]; then
-			echo "ERROR: Image is not RHEL 7.4+"
+		if [[ $MAJOR -ne 8 ]]; then
+			echo "ERROR: Image is not RHEL 8.4+"
 			umount /rhel
 			rm -rf /rhel
 			exit 1
 		fi
 		if [[ $MINOR -ge 4 ]]; then
-			echo "ERROR: Image is not RHEL 7.4+"
+			echo "ERROR: Image is not RHEL 8.4+"
 			umount /rhel
 			rm -rf /rhel
 			exit 1
@@ -115,14 +115,14 @@ fi
 
 echo -n "Modifying RHEL DVD Image..."
 # Set RHEL Version in ISO Linux
-sed -i "s/7.X/$RHEL_VERSION/g" $DIR/config/isolinux/isolinux.cfg
-sed -i "s/7.X/$RHEL_VERSION/g" $DIR/config/EFI/BOOT/grub.cfg
+sed -i "s/8.X/$RHEL_VERSION/g" $DIR/config/isolinux/isolinux.cfg
+sed -i "s/8.X/$RHEL_VERSION/g" $DIR/config/EFI/BOOT/grub.cfg
 cp -a $DIR/config/* $DIR/rhel-dvd/
 if [[ $MINOR -ge 3 ]]; then
 	rm -f $DIR/rhel-dvd/hardening/openscap*rpm 
 fi
-sed -i "s/$RHEL_VERSION/7.X/g" $DIR/config/isolinux/isolinux.cfg
-sed -i "s/$RHEL_VERSION/7.X/g" $DIR/config/EFI/BOOT/grub.cfg
+sed -i "s/$RHEL_VERSION/8.X/g" $DIR/config/isolinux/isolinux.cfg
+sed -i "s/$RHEL_VERSION/8.X/g" $DIR/config/EFI/BOOT/grub.cfg
 echo " Done."
 echo "Remastering RHEL DVD Image..."
 cd $DIR/rhel-dvd
