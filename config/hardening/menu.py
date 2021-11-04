@@ -9,6 +9,9 @@
 # Copyright: Red Hat, (C) 2014
 # License: Apache License, Version 2.0
 
+
+# Possibly replace pygtk,gtk with gtk+ and version verificaiton?
+	
 import os,sys,re,crypt,random
 try:
     os.environ['DISPLAY']
