@@ -14,7 +14,7 @@ try:
     os.environ['DISPLAY']
     import pygtk,gtk
 except:
-    print "Error: DISPLAY environment varible not set."
+    print("Error: DISPLAY environment varible not set.")
     sys.exit(1)
 
 # Class containing verification items
