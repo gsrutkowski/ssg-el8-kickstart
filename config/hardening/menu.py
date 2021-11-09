@@ -395,12 +395,12 @@ class Display_Menu:
         self.button_bar = Gtk.HBox()
 
         # Apply Configurations
-        self.button1 = Gtk.Button(None,Gtk.STOCK_OK)
+        self.button1 = Gtk.Button("Ok",Gtk.STOCK_OK)
         self.button1.connect("clicked",self.apply_configuration)
         self.button_bar.pack_end(self.button1,False,True,0)
 
         # Help
-        self.button2 = Gtk.Button(None,Gtk.STOCK_HELP)
+        self.button2 = Gtk.Button("Help",Gtk.STOCK_HELP)
         self.button2.connect("clicked",self.show_help_main)
         self.button_bar.pack_end(self.button2,False,True,0)
 
@@ -424,7 +424,7 @@ class Display_Menu:
 
         ## STOCK CONFIGURATIONS (Minimal Install)
         # Default SSG Profile (DISA STIG)
-        self.profile='stig-rhel8-disa'
+        self.profile='stig'
         # Post Configuration (nochroot)
         f = open('/tmp/hardening-post-nochroot','w')
         f.write('')
