@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Graphical Kickstart Script
 #
 # This script was written by Frank Caviggia, Red Hat Consulting
@@ -11,11 +11,13 @@
 
 
 # Possibly replace pygtk,gtk with gtk+ and version verificaiton?
-	
-import os,sys,re,crypt,random
+#    import pygtk,gtk
+import os,sys,re,crypt,random,gi
 try:
     os.environ['DISPLAY']
-    import pygtk,gtk
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import Gtk;
+    from gi.repository import Gdk;
 except:
     print("Error: DISPLAY environment varible not set.")
     sys.exit(1)
@@ -82,52 +84,52 @@ class Display_Menu:
         self.verify = Verification()
     
         # Create Main Window
-        self.window = gtk.Window()
-        self.window.set_title("Red Hat Enterprise Linux 7 - SSG Installation Menu")
-        self.window.set_position(gtk.WIN_POS_CENTER)
-        self.window.connect("delete_event",gtk.main_quit)
-        self.display = gtk.gdk.display_get_default()
+        self.window = Gtk.Window()
+        self.window.set_title("Red Hat Enterprise Linux 8 - SSG Installation Menu")
+        self.window.set_position(Gtk.WindowPosition.CENTER)
+        self.window.connect("delete_event",Gtk.main_quit)
+        self.display = Gdk.Display.get_default()
         self.screen = self.display.get_default_screen()
         self.hres = self.screen.get_width()
         self.vres = self.screen.get_height()
         self.window.connect("key-release-event",self.event_key)
 
         # Create Main Vertical Box to Populate
-        self.vbox = gtk.VBox()
+        self.vbox = Gtk.VBox()
 
         if self.hres == 640:
             self.window.resize(640,480)
         elif self.hres > 640:
             self.window.resize(800,600)
             # RedHat Logo
-            self.logo = gtk.Image()
+            self.logo = Gtk.Image()
             self.logo.set_from_file("/run/install/repo/hardening/top.png")
             self.logo.set_alignment(0,0)
             self.logo.set_padding(0,0)
             self.vbox.add(self.logo)
 
         # Creates Header
-        self.header = gtk.HBox()
-        self.label = gtk.Label("<span font_family='liberation-sans' weight='bold' foreground='red' size='large'>  Red Hat Enterprise Linux 7 - SCAP Security Guide Installation  </span>")
+        self.header = Gtk.HBox()
+        self.label = Gtk.Label("<span font_family='liberation-sans' weight='bold' foreground='red' size='large'>  Red Hat Enterprise Linux 8 - SCAP Security Guide Installation  </span>")
         self.label.set_use_markup(True)
         self.header.add(self.label)
         self.vbox.add(self.header)
 
         # Creates Information Message
-        self.label = gtk.Label('This DVD installs Red Hat Enterprise Linux 7 with configurations required by multiple government regulations')
+        self.label = Gtk.Label('This DVD installs Red Hat Enterprise Linux 8 with configurations required by multiple government regulations')
         self.vbox.add(self.label)
-        self.label = gtk.Label('using the SCAP Security Guide (SSG) as a hardening script.                  RHEL 7 (SSG DVD Installer v.0.8b)')
+        self.label = Gtk.Label('using the SCAP Security Guide (SSG) as a hardening script.                  RHEL 8 (SSG DVD Installer v.0.8b)')
         self.vbox.add(self.label)
 
         # Blank Label
-        self.label = gtk.Label("")
+        self.label = Gtk.Label("")
         self.vbox.add(self.label)    
 
         # System Configuration
-        self.system = gtk.HBox()
-        self.label = gtk.Label("   Hostname: ")
+        self.system = Gtk.HBox()
+        self.label = Gtk.Label("   Hostname: ")
         self.system.pack_start(self.label,False,True, 0)
-        self.hostname = gtk.Entry(100)
+        self.hostname = Gtk.Entry()
         self.hostname.set_size_request(225,-1)
         self.system.pack_start(self.hostname,False,True,0)
         try:
@@ -137,9 +139,9 @@ class Display_Menu:
                 self.hostname.set_text('localhost.localdomain')
         except:
             self.hostname.set_text('localhost.localdomain')
-        self.label = gtk.Label("              System Profile: ") 
+        self.label = Gtk.Label("              System Profile: ") 
         self.system.pack_start(self.label,False,True, 0)
-        self.system_profile = gtk.combo_box_new_text()
+        self.system_profile = Gtk.ComboBoxText()  
         self.system_profile.append_text("Minimal Installation")
         self.system_profile.append_text("IdM Authentication Server")
         self.system_profile.append_text("RHEV-Attached KVM Server")
@@ -150,10 +152,10 @@ class Display_Menu:
         self.system.pack_start(self.system_profile,False,True,0)
         self.vbox.add(self.system)
 
-        self.classification = gtk.HBox()
-        self.label = gtk.Label("                                                                               System Classification: ")
+        self.classification = Gtk.HBox()
+        self.label = Gtk.Label("                                                                               System Classification: ")
         self.classification.pack_start(self.label,False,True, 0)
-        self.system_classification = gtk.combo_box_new_text()
+        self.system_classification = Gtk.ComboBoxText()
         self.system_classification.append_text("UNCLASSIFIED")
         self.system_classification.append_text("UNCLASSIFIED//FOUO")
         self.system_classification.append_text("CONFIDENTIAL")
@@ -165,10 +167,10 @@ class Display_Menu:
         self.classification.pack_start(self.system_classification,False,True,0)
         self.vbox.add(self.classification)
 
-        self.security = gtk.HBox()
-        self.label = gtk.Label("                                                                     SCAP Security Guide Profile: ")
+        self.security = Gtk.HBox()
+        self.label = Gtk.Label("                                                                     SCAP Security Guide Profile: ")
         self.security.pack_start(self.label,False,True, 0)
-        self.system_security = gtk.combo_box_new_text()
+        self.system_security = Gtk.ComboBoxText()
         self.system_security.append_text("DISA STIG")
         self.system_security.set_active(0)
         self.system_security.connect('changed',self.configure_system_profile)
@@ -176,7 +178,7 @@ class Display_Menu:
         self.vbox.add(self.security)
 
         # Blank Label
-        self.label = gtk.Label("")
+        self.label = Gtk.Label("")
         self.vbox.add(self.label)
 
 
@@ -203,43 +205,43 @@ class Display_Menu:
                 self.system_memory[line.split(':')[0]] = line.split(':')[1].strip()
         f.close()
                         
-        self.cpu_information = gtk.HBox()
-        self.label = gtk.Label("   CPU Model: ")
+        self.cpu_information = Gtk.HBox()
+        self.label = Gtk.Label("   CPU Model: ")
         self.cpu_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label(" %s "%(self.cpu_model))
+        self.label = Gtk.Label(" %s "%(self.cpu_model))
         self.cpu_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label("   CPU Threads: ")
+        self.label = Gtk.Label("   CPU Threads: ")
         self.cpu_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label(" %d "%(self.cpu_cores))
+        self.label = Gtk.Label(" %d "%(self.cpu_cores))
         self.cpu_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label("   Architecure: ")
+        self.label = Gtk.Label("   Architecure: ")
         self.cpu_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label(" %s "%(self.cpu_arch))
+        self.label = Gtk.Label(" %s "%(self.cpu_arch))
         self.cpu_information.pack_start(self.label,False,True, 0)
         self.vbox.add(self.cpu_information)
 
-        self.memory_information = gtk.HBox()
-        self.label = gtk.Label("   Total System Memory: ")
+        self.memory_information = Gtk.HBox()
+        self.label = Gtk.Label("   Total System Memory: ")
         self.memory_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label(" %s "%(self.system_memory['MemTotal']))
+        self.label = Gtk.Label(" %s "%(self.system_memory['MemTotal']))
         self.memory_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label("   Free Memory: ")
+        self.label = Gtk.Label("   Free Memory: ")
         self.memory_information.pack_start(self.label,False,True, 0)
-        self.label = gtk.Label(" %s "%(self.system_memory['MemFree']))
+        self.label = Gtk.Label(" %s "%(self.system_memory['MemFree']))
         self.memory_information.pack_start(self.label,False,True, 0)
         self.vbox.add(self.memory_information)
 
         # Disk Partitioning Section
-        self.label = gtk.Label("\n<span font_family='liberation-sans' weight='bold'>Disk Partitioning</span>")
+        self.label = Gtk.Label("\n<span font_family='liberation-sans' weight='bold'>Disk Partitioning</span>")
         self.label.set_use_markup(True)
         self.vbox.add(self.label)
 
         # Blank Label
-        self.label = gtk.Label("")
+        self.label = Gtk.Label("")
         self.vbox.add(self.label)
 
         # List Disks
-        self.disk_list = gtk.HBox()
+        self.disk_list = Gtk.HBox()
 
         self.disk_info = []
         self.disk_total = 0
@@ -249,18 +251,18 @@ class Display_Menu:
             if not ('fd0' in self.line or 'sr0' in self.line):
                 self.disk_info.append(self.line.split(' '))
                
-        self.label = gtk.Label("   Available Disks: ")
+        self.label = Gtk.Label("   Available Disks: ")
         self.disk_list.pack_start(self.label, False, True, 0)
 
         if len(self.disk_info) == 0:
-            self.label = gtk.Label("No Drives Available.")
+            self.label = Gtk.Label("No Drives Available.")
             self.disk_list.pack_start(self.label,False,True,0)
         else:
             for i in range(len(self.disk_info)):
                 if len(self.disk_info) > 5:
-                    exec("self.disk%d = gtk.CheckButton(self.disk_info[%d][0])"%(i,i))
+                    exec("self.disk%d = Gtk.CheckButton(self.disk_info[%d][0])"%(i,i))
                 else:
-                    exec("self.disk%s = gtk.CheckButton(self.disk_info[%d][0] +' ('+ str(int(float(self.disk_info[%d][1]))/1024) +'Gb)')"%(i,i,i))
+                    exec("self.disk%s = Gtk.CheckButton(self.disk_info[%d][0] +' ('+ str(int(float(self.disk_info[%d][1]))/1024) +'Gb)')"%(i,i,i))
                 exec("self.disk%d.set_active(True)"%(i))
                 exec("self.disk_list.pack_start(self.disk%d, False, True, 0)"%(i))
                 self.disk_total += int(float(self.disk_info[i][1])/1024)
@@ -268,23 +270,23 @@ class Display_Menu:
         self.vbox.add(self.disk_list)
 
         # Disk Encryption (Ability to disable LUKS for self encrypting drives)
-        self.encrypt = gtk.HBox()
+        self.encrypt = Gtk.HBox()
 
-        self.label = gtk.Label("                             ")
+        self.label = Gtk.Label("                             ")
         self.encrypt.pack_start(self.label, False, True, 0)
 
-        self.encrypt_disk = gtk.CheckButton('Encrypt Drives with LUKS')
+        self.encrypt_disk = Gtk.CheckButton('Encrypt Drives with LUKS')
         self.encrypt_disk.set_active(True)
         self.encrypt.pack_start(self.encrypt_disk, False, True, 0)
 
-        self.label = gtk.Label("   ")
+        self.label = Gtk.Label("   ")
         self.encrypt.pack_start(self.label, False, True, 0)
 
-        self.fips_kernel = gtk.CheckButton('Kernel in FIPS 140-2 Mode')
+        self.fips_kernel = Gtk.CheckButton('Kernel in FIPS 140-2 Mode')
         self.fips_kernel.set_active(True)
         self.encrypt.pack_start(self.fips_kernel, False, True, 0)
 
-        self.nousb_kernel = gtk.CheckButton('Disable USB (nousb)')
+        self.nousb_kernel = Gtk.CheckButton('Disable USB (nousb)')
         self.nousb_kernel.set_active(False)
         self.encrypt.pack_start(self.nousb_kernel, False, True, 0)
 
@@ -293,117 +295,117 @@ class Display_Menu:
 
         # Minimal Installation Warning
         if self.disk_total < 8:
-            self.MessageBox(self.window,"<b>Recommended minimum of 8Gb disk space for a Minimal Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",gtk.MESSAGE_WARNING)
+            self.MessageBox(self.window,"<b>Recommended minimum of 8Gb disk space for a Minimal Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",Gtk.MessageType.WARNING)
 
         # Blank Label
-        self.label = gtk.Label("")
+        self.label = Gtk.Label("")
         self.vbox.add(self.label)
 
         # Partitioning
-        self.label = gtk.Label('Required LVM Partitioning Percentage')
+        self.label = Gtk.Label('Required LVM Partitioning Percentage')
         self.vbox.add(self.label)
-        self.partitioning1 = gtk.HBox()
-        self.label = gtk.Label("           ROOT (/) ")
+        self.partitioning1 = Gtk.HBox()
+        self.label = Gtk.Label("           ROOT (/) ")
         self.partitioning1.pack_start(self.label,False,True,0)
-        self.root_range = gtk.Adjustment(30,1,95,1,0, 0)
-        self.root_partition = gtk.SpinButton(adjustment=self.root_range,climb_rate=1,digits=0)
+        self.root_range = Gtk.Adjustment(30,1,95,1,0, 0)
+        self.root_partition = Gtk.SpinButton(adjustment=self.root_range,climb_rate=1,digits=0)
         self.root_partition.connect('value-changed',self.lvm_check)
         self.partitioning1.pack_start(self.root_partition,False,True,0)
-        self.label = gtk.Label("%  HOME (/home) ")
+        self.label = Gtk.Label("%  HOME (/home) ")
         self.partitioning1.pack_start(self.label,False,True,0)
-        self.home_range = gtk.Adjustment(25,1,95,1,0, 0)
-        self.home_partition = gtk.SpinButton(adjustment=self.home_range,climb_rate=1,digits=0)
+        self.home_range = Gtk.Adjustment(25,1,95,1,0, 0)
+        self.home_partition = Gtk.SpinButton(adjustment=self.home_range,climb_rate=1,digits=0)
         self.home_partition.connect('value-changed',self.lvm_check)
         self.partitioning1.pack_start(self.home_partition,False,True,0)
-        self.label = gtk.Label("%  TMP (/tmp) ")
+        self.label = Gtk.Label("%  TMP (/tmp) ")
         self.partitioning1.pack_start(self.label,False,True,0)
-        self.tmp_range = gtk.Adjustment(10,1,60,1,0, 0)
-        self.tmp_partition = gtk.SpinButton(adjustment=self.tmp_range,climb_rate=1,digits=0)
+        self.tmp_range = Gtk.Adjustment(10,1,60,1,0, 0)
+        self.tmp_partition = Gtk.SpinButton(adjustment=self.tmp_range,climb_rate=1,digits=0)
         self.tmp_partition.connect('value-changed',self.lvm_check)
         self.partitioning1.pack_start(self.tmp_partition,False,True,0)
-        self.label = gtk.Label("%  VAR (/var) ")
+        self.label = Gtk.Label("%  VAR (/var) ")
         self.partitioning1.pack_start(self.label,False,True,0)
-        self.var_range = gtk.Adjustment(10,1,95,1,0, 0)
-        self.var_partition = gtk.SpinButton(adjustment=self.var_range,climb_rate=1,digits=0)
+        self.var_range = Gtk.Adjustment(10,1,95,1,0, 0)
+        self.var_partition = Gtk.SpinButton(adjustment=self.var_range,climb_rate=1,digits=0)
         self.var_partition.connect('value-changed',self.lvm_check)
         self.partitioning1.pack_start(self.var_partition,False,True,0)
-        self.label = gtk.Label("%")
+        self.label = Gtk.Label("%")
         self.partitioning1.pack_start(self.label,False,True,0)
 
         self.vbox.add(self.partitioning1)
-        self.partitioning2 = gtk.HBox()
-        self.label = gtk.Label("  LOG (/var/log) ")
+        self.partitioning2 = Gtk.HBox()
+        self.label = Gtk.Label("  LOG (/var/log) ")
         self.partitioning2.pack_start(self.label,False,True,0)
-        self.log_range = gtk.Adjustment(10,1,75,1,0, 0)
-        self.log_partition = gtk.SpinButton(adjustment=self.log_range,climb_rate=1,digits=0)
+        self.log_range = Gtk.Adjustment(10,1,75,1,0, 0)
+        self.log_partition = Gtk.SpinButton(adjustment=self.log_range,climb_rate=1,digits=0)
         self.log_partition.connect('value-changed',self.lvm_check)
         self.partitioning2.pack_start(self.log_partition,False,True,0)
-        self.label = gtk.Label("%  AUDIT (/var/log/audit) ")
+        self.label = Gtk.Label("%  AUDIT (/var/log/audit) ")
         self.partitioning2.pack_start(self.label,False,True,0)
-        self.audit_range = gtk.Adjustment(10,1,75,1,0, 0)
-        self.audit_partition = gtk.SpinButton(adjustment=self.audit_range,climb_rate=1,digits=0)
+        self.audit_range = Gtk.Adjustment(10,1,75,1,0, 0)
+        self.audit_partition = Gtk.SpinButton(adjustment=self.audit_range,climb_rate=1,digits=0)
         self.audit_partition.connect('value-changed',self.lvm_check)
         self.partitioning2.pack_start(self.audit_partition,False,True,0)
-        self.label = gtk.Label("%  SWAP ")
+        self.label = Gtk.Label("%  SWAP ")
         self.partitioning2.pack_start(self.label,False,True,0)
-        self.swap_range = gtk.Adjustment(5,1,25,1,0, 0)
-        self.swap_partition = gtk.SpinButton(adjustment=self.swap_range,climb_rate=1,digits=0)
+        self.swap_range = Gtk.Adjustment(5,1,25,1,0, 0)
+        self.swap_partition = Gtk.SpinButton(adjustment=self.swap_range,climb_rate=1,digits=0)
         self.swap_partition.connect('value-changed',self.lvm_check)
         self.partitioning2.pack_start(self.swap_partition,False,True,0)
-        self.label = gtk.Label("%")
+        self.label = Gtk.Label("%")
         self.partitioning2.pack_start(self.label,False,True,0)
         self.vbox.add(self.partitioning2)
         # Blank Label
-        self.label = gtk.Label("")
+        self.label = Gtk.Label("")
         self.vbox.add(self.label)
-        self.label = gtk.Label('Optional LVM Partitioning Percentage')
+        self.label = Gtk.Label('Optional LVM Partitioning Percentage')
         self.vbox.add(self.label)
-        self.partitioning3 = gtk.HBox()
-        self.label = gtk.Label("           WWW (/var/www) ")
+        self.partitioning3 = Gtk.HBox()
+        self.label = Gtk.Label("           WWW (/var/www) ")
         self.partitioning3.pack_start(self.label,False,True,0)
-        self.www_range = gtk.Adjustment(0,0,90,1,0, 0)
-        self.www_partition = gtk.SpinButton(adjustment=self.www_range,climb_rate=1,digits=0)
+        self.www_range = Gtk.Adjustment(0,0,90,1,0, 0)
+        self.www_partition = Gtk.SpinButton(adjustment=self.www_range,climb_rate=1,digits=0)
         self.www_partition.connect('value-changed',self.lvm_check)
         self.partitioning3.pack_start(self.www_partition,False,True,0)
-        self.label = gtk.Label("%   OPT (/opt) ")
+        self.label = Gtk.Label("%   OPT (/opt) ")
         self.partitioning3.pack_start(self.label,False,True,0)
-        self.opt_range = gtk.Adjustment(0,0,90,1,0, 0)
-        self.opt_partition = gtk.SpinButton(adjustment=self.opt_range,climb_rate=1,digits=0)
+        self.opt_range = Gtk.Adjustment(0,0,90,1,0, 0)
+        self.opt_partition = Gtk.SpinButton(adjustment=self.opt_range,climb_rate=1,digits=0)
         self.opt_partition.connect('value-changed',self.lvm_check)
         self.partitioning3.pack_start(self.opt_partition,False,True,0)
-        self.label = gtk.Label("%")
+        self.label = Gtk.Label("%")
         self.partitioning3.pack_start(self.label,False,True,0)
         self.vbox.add(self.partitioning3)
 
         # Blank Label
-        self.label = gtk.Label("")
+        self.label = Gtk.Label("")
         self.vbox.add(self.label)
 
-        self.partition_message = gtk.HBox()
-        self.label = gtk.Label('    Note: LVM Partitions should add up to 100% or less before proceeding.     <b>Currently Used:</b> ')
+        self.partition_message = Gtk.HBox()
+        self.label = Gtk.Label('    Note: LVM Partitions should add up to 100% or less before proceeding.     <b>Currently Used:</b> ')
         self.label.set_use_markup(True)
         self.partition_message.pack_start(self.label,False,True,0)
-        self.partition_used = gtk.Label('100%')
+        self.partition_used = Gtk.Label('100%')
         self.partition_message.pack_start(self.partition_used,False,True,0)
         self.vbox.add(self.partition_message)
 
         # Button Bar at the Bottom of the Window
-        self.label = gtk.Label("")
+        self.label = Gtk.Label("")
         self.vbox.add(self.label)
-        self.button_bar = gtk.HBox()
+        self.button_bar = Gtk.HBox()
 
         # Apply Configurations
-        self.button1 = gtk.Button(None,gtk.STOCK_OK)
+        self.button1 = Gtk.Button(None,Gtk.STOCK_OK)
         self.button1.connect("clicked",self.apply_configuration)
         self.button_bar.pack_end(self.button1,False,True,0)
 
         # Help
-        self.button2 = gtk.Button(None,gtk.STOCK_HELP)
+        self.button2 = Gtk.Button(None,Gtk.STOCK_HELP)
         self.button2.connect("clicked",self.show_help_main)
         self.button_bar.pack_end(self.button2,False,True,0)
 
         # Network Configuration
-        self.button3 = gtk.Button("Network",None)
+        self.button3 = Gtk.Button("Network",None)
         self.button3.connect("clicked",self.configure_network,self.window)
         self.button_bar.pack_end(self.button3,False,True,0)
 
@@ -422,7 +424,7 @@ class Display_Menu:
 
         ## STOCK CONFIGURATIONS (Minimal Install)
         # Default SSG Profile (DISA STIG)
-        self.profile='stig-rhel7-disa'
+        self.profile='stig-rhel8-disa'
         # Post Configuration (nochroot)
         f = open('/tmp/hardening-post-nochroot','w')
         f.write('')
@@ -430,7 +432,7 @@ class Display_Menu:
         # Post Configuration
         f = open('/tmp/hardening-post','w')
         # Run Hardening Script
-        f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel7-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml\n')
+        f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel8-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel8-xccdf.xml\n')
         # Firewall Configuration
         f.write('firewall-cmd --permanent --add-service=ssh\n')
         f.write('firewall-cmd --reload\n')
@@ -442,15 +444,15 @@ class Display_Menu:
 
     # Key Press Event
     def event_key(self,args,event):
-        if event.keyval == gtk.keysyms.F12: 
+        if event.keyval == Gtk.keysyms.F12: 
             self.apply_configuration(args)
-        elif event.keyval == gtk.keysyms.F1:
+        elif event.keyval == Gtk.keysyms.F1:
             self.show_help_main(args)
 
     # Shows Help for Main Install
     def show_help_main(self,args):
         self.help_text = ("<b>Install Help</b>\n\n- All LVM partitions need to take less than or equal to 100% of the LVM Volume Group.\n\n- Pressing OK prompts for a password to encrypt Disk (LUKS), GRUB, and admin password.\n\n- The sshusers group controls remote access, wheel group is for root users, and isso group is for limited root with auditing permissions.\n\n- To access root remotely via ssh you need to create a user and add them to the wheel and sshusers groups.\n\n- Minimum password length is 15 characters, using a strong password is recommended.\n")
-        self.MessageBox(self.window,self.help_text,gtk.MESSAGE_INFO)
+        self.MessageBox(self.window,self.help_text,Gtk.MessageType.INFO)
 
 
     # System Profile Configuration
@@ -472,7 +474,7 @@ class Display_Menu:
 
         # Define SSG Security Profile
         if int(self.system_security.get_active()) == 0:
-            self.profile='stig-rhel7-disa'
+            self.profile='stig'
 
         ################################################################################################################
         # Minimal (Defaults to Kickstart)
@@ -480,7 +482,7 @@ class Display_Menu:
         if int(self.system_profile.get_active()) == 0:
             # Partitioning
             if self.disk_total < 8:
-                self.MessageBox(self.window,"<b>Recommended minimum of 8Gb disk space for a Minimal Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",gtk.MESSAGE_WARNING)
+                self.MessageBox(self.window,"<b>Recommended minimum of 8Gb disk space for a Minimal Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",Gtk.MessageType.WARNING)
             self.opt_partition.set_value(0)
             self.www_partition.set_value(0)
             self.swap_partition.set_value(5)
@@ -497,7 +499,7 @@ class Display_Menu:
             # Post Configuration
             f = open('/tmp/hardening-post','w')
             # Run Hardening Script
-            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel7-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml\n')
+            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel8-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel8-xccdf.xml\n')
             # Firewall Configuration
             f.write('firewall-cmd --permanent --add-service=ssh\n')
             f.write('firewall-cmd --reload\n')
@@ -516,7 +518,7 @@ class Display_Menu:
         if int(self.system_profile.get_active()) == 1:
             # Partitioning
             if self.disk_total < 10:
-                self.MessageBox(self.window,"<b>Recommended minimum of 10Gb disk space for a IdM Authentication Server Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",gtk.MESSAGE_WARNING)
+                self.MessageBox(self.window,"<b>Recommended minimum of 10Gb disk space for a IdM Authentication Server Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",Gtk.MessageType.WARNING)
             self.opt_partition.set_value(0)
             self.www_partition.set_value(5)
             self.swap_partition.set_value(5)
@@ -533,7 +535,7 @@ class Display_Menu:
             # Post Configuration
             f = open('/tmp/hardening-post','w')
             # Run Hardening Script
-            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel7-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml\n')
+            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel8-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel8-xccdf.xml\n')
             # Firewall Configuration
             f.write('firewall-cmd --permanent --add-service=ssh --add-service=http --add-service=https --add-service=ldap --add-service=ldaps --add-service=kerberos --add-service=kpasswd --add-service=dns --add-service=ntp\n')
             f.write('firewall-cmd --reload\n')
@@ -553,10 +555,10 @@ class Display_Menu:
         ################################################################################################################
         if int(self.system_profile.get_active()) == 2:
             # WARNING - HARDENING SCRIPT NOT RUN!
-            self.MessageBox(self.window,"<b>Warning:</b> Please run the following script before adding system RHEV-M:\n\n   # /root/rhevm-preinstall.sh\n\nAfter adding the system to RHEV-M, run the following:\n\n   # /root/rhevm-postinstall.sh",gtk.MESSAGE_WARNING)
+            self.MessageBox(self.window,"<b>Warning:</b> Please run the following script before adding system RHEV-M:\n\n   # /root/rhevm-preinstall.sh\n\nAfter adding the system to RHEV-M, run the following:\n\n   # /root/rhevm-postinstall.sh",Gtk.MessageType.WARNING)
             # Partitioning
             if self.disk_total < 60:
-                self.MessageBox(self.window,"<b>Recommended minimum of 60Gb disk space for a RHEV-Attached KVM Server Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",gtk.MESSAGE_WARNING)
+                self.MessageBox(self.window,"<b>Recommended minimum of 60Gb disk space for a RHEV-Attached KVM Server Install!</b>\n\n You have "+str(self.disk_total)+"Gb available.",Gtk.MessageType.WARNING)
             self.opt_partition.set_value(0)
             self.www_partition.set_value(0)
             self.swap_partition.set_value(5)
@@ -573,7 +575,7 @@ class Display_Menu:
             # Post Configuration
             f = open('/tmp/hardening-post','w')
             # Run Hardening Script
-            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel7-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml\n')
+            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel8-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel8-xccdf.xml\n')
             # RHEV Scripts for Pre-Install/Post-Install
             f.write('cp /root/hardening/rhevm*.sh /root/\n')
             # Firewall Configuration
@@ -599,7 +601,7 @@ class Display_Menu:
         if int(self.system_profile.get_active()) == 3:
             # Partitioning
             if self.disk_total < 12:
-                self.MessageBox(self.window,"<b>Recommended minimum 12Gb disk space for a User Workstation!</b>\n\n You have "+str(self.disk_total)+"Gb available.",gtk.MESSAGE_WARNING)
+                self.MessageBox(self.window,"<b>Recommended minimum 12Gb disk space for a User Workstation!</b>\n\n You have "+str(self.disk_total)+"Gb available.",Gtk.MessageType.WARNING)
             self.opt_partition.set_value(0)
             self.www_partition.set_value(0)
             self.swap_partition.set_value(5)
@@ -616,7 +618,7 @@ class Display_Menu:
             # Post Configuration
             f = open('/tmp/hardening-post','w')
             # Run Hardening Script
-            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel7-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml\n')
+            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel8-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel8-xccdf.xml\n')
             f.write('/usr/bin/oscap xccdf eval --profile stig-firefox-upstream --remediate --results /root/`hostname`-ssg-firefox-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-firefox-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-firefox-xccdf.xml\n')
             # Firewall Configuration
             f.write('firewall-cmd --permanent --add-service=ssh\n')
@@ -654,7 +656,7 @@ class Display_Menu:
         if int(self.system_profile.get_active()) == 4:
             # Partitioning
             if self.disk_total < 60:
-                self.MessageBox(self.window,"<b>Recommended minimum 60Gb disk space for a RHEL/KVM Server!</b>\n\n You have "+str(self.disk_total)+"Gb available.",gtk.MESSAGE_WARNING)
+                self.MessageBox(self.window,"<b>Recommended minimum 60Gb disk space for a RHEL/KVM Server!</b>\n\n You have "+str(self.disk_total)+"Gb available.",Gtk.MessageType.WARNING)
             self.opt_partition.set_value(0)
             self.www_partition.set_value(0)
             self.swap_partition.set_value(2)
@@ -671,7 +673,7 @@ class Display_Menu:
             # Post Configuration
             f = open('/tmp/hardening-post','w')
             # Run Hardening Script
-            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel7-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel7-xccdf.xml\n')
+            f.write('/usr/bin/oscap xccdf eval --profile '+str(self.profile)+' --remediate --results /root/`hostname`-ssg-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-rhel8-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-rhel8-xccdf.xml\n')
             f.write('/usr/bin/oscap xccdf eval --profile stig-firefox-upstream --remediate --results /root/`hostname`-ssg-firefox-results.xml  --cpe /usr/share/xml/scap/ssg/content/ssg-firefox-cpe-dictionary.xml /usr/share/xml/scap/ssg/content/ssg-firefox-xccdf.xml\n')
             # Firewall Configuration
             f.write('cp /root/hardening/iptables.sh /root/\n')
@@ -715,41 +717,41 @@ class Display_Menu:
         self.lvm = self.root_partition.get_value_as_int()+self.home_partition.get_value_as_int()+self.tmp_partition.get_value_as_int()+self.var_partition.get_value_as_int()+self.log_partition.get_value_as_int()+self.audit_partition.get_value_as_int()+self.swap_partition.get_value_as_int()+self.www_partition.get_value_as_int()+self.opt_partition.get_value_as_int()
         self.partition_used.set_label(str(self.lvm)+'%')
         if int(self.lvm) > 100:
-            self.MessageBox(self.window,"<b>Verify that LVM configuration is not over 100%!</b>",gtk.MESSAGE_ERROR)
+            self.MessageBox(self.window,"<b>Verify that LVM configuration is not over 100%!</b>",Gtk.MessageType.ERROR)
             return False
         else:
             return True
 
 
     # Display Message Box (e.g. Help Screen, Warning Screen, etc.)
-    def MessageBox(self,parent,text,type=gtk.MESSAGE_INFO):
-        message = gtk.MessageDialog(parent,0,type,gtk.BUTTONS_OK)
+    def MessageBox(self,parent,text,type=Gtk.MessageType.INFO):
+        message = Gtk.MessageDialog(parent,0,type,Gtk.ButtonsType.OK)
         message.set_markup(text)    
         response = message.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             message.destroy()
 
         
     # Get Password
     def get_password(self,parent):
-        dialog = gtk.Dialog("Configure System Password",parent,gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_CANCEL,gtk.RESPONSE_REJECT,gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
-        self.pass1 = gtk.HBox()
-        self.label1 = gtk.Label("           Password: ")
+        dialog = Gtk.Dialog("Configure System Password",parent,Gtk.DialogFlags.MODAL|Gtk.DialogFlags.DESTROY_WITH_PARENT,(Gtk.STOCK_CANCEL,Gtk.ResponseType.REJECT,Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
+        self.pass1 = Gtk.HBox()
+        self.label1 = Gtk.Label("           Password: ")
         self.pass1.pack_start(self.label1,False,True,0)
-        self.password1 = gtk.Entry()
+        self.password1 = Gtk.Entry()
         self.password1.set_visibility(False)
         self.pass1.pack_start(self.password1,False,True,0)
         dialog.vbox.add(self.pass1)
-        self.pass2 = gtk.HBox()
-        self.label2 = gtk.Label("  Verify Password: ")
+        self.pass2 = Gtk.HBox()
+        self.label2 = Gtk.Label("  Verify Password: ")
         self.pass2.pack_start(self.label2,False,True,0)
-        self.password2 = gtk.Entry()
+        self.password2 = Gtk.Entry()
         self.password2.set_visibility(False)
         self.pass2.pack_start(self.password2,False,True,0)
         dialog.vbox.add(self.pass2)
         dialog.show_all()
         response = dialog.run()
-        if response == gtk.RESPONSE_ACCEPT:
+        if response == Gtk.ResponseType.ACCEPT:
             self.a = self.password1.get_text()
             self.b = self.password2.get_text()
             dialog.destroy()
@@ -761,13 +763,13 @@ class Display_Menu:
 
     # Configure Network Dialog
     def configure_network(self,parent,window):
-        self.network_dialog = gtk.Dialog("Configure Network",window,gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_OK,gtk.RESPONSE_ACCEPT))
+        self.network_dialog = Gtk.Dialog("Configure Network",window,Gtk.DialogFlags.MODAL|Gtk.DialogFlags.DESTROY_WITH_PARENT,(Gtk.STOCK_OK,Gtk.ResponseType.ACCEPT))
 
         # List Network Ports
-        self.network = gtk.HBox()
-        self.label = gtk.Label(" Network Device(s): ")
+        self.network = Gtk.HBox()
+        self.label = Gtk.Label(" Network Device(s): ")
         self.network.pack_start(self.label, False, True, 0)
-        self.network_devices = gtk.combo_box_new_text()
+        self.network_devices = Gtk.combo_box_new_text()
         self.output = os.popen("ip link show | grep UP | awk -F ': ' '{ print $2 }'")
         for self.line in self.output:
             self.line = self.line.strip()
@@ -775,38 +777,38 @@ class Display_Menu:
                 self.network_devices.append_text(self.line)
         self.network.pack_start(self.network_devices,False,True,0)
         self.network_dialog.vbox.add(self.network)
-        self.network = gtk.HBox()
-        self.dhcp = gtk.CheckButton('DHCP')
+        self.network = Gtk.HBox()
+        self.dhcp = Gtk.CheckButton('DHCP')
         self.network.pack_start(self.dhcp,False,True,0)
         self.network_dialog.vbox.add(self.network)
-        self.network = gtk.HBox()
-        self.label = gtk.Label("           IP Address: ")
+        self.network = Gtk.HBox()
+        self.label = Gtk.Label("           IP Address: ")
         self.network.pack_start(self.label,False,True,0)
-        self.ip = gtk.Entry()
+        self.ip = Gtk.Entry()
         self.network.pack_start(self.ip,False,True,0)
         self.network_dialog.vbox.add(self.network)
-        self.network = gtk.HBox()
-        self.label = gtk.Label("             Netmask: ")
+        self.network = Gtk.HBox()
+        self.label = Gtk.Label("             Netmask: ")
         self.network.pack_start(self.label,False,True,0)
-        self.netmask = gtk.Entry()
+        self.netmask = Gtk.Entry()
         self.network.pack_start(self.netmask,False,True,0)
         self.network_dialog.vbox.add(self.network)
-        self.network = gtk.HBox()
-        self.label = gtk.Label("               Gateway: ")
+        self.network = Gtk.HBox()
+        self.label = Gtk.Label("               Gateway: ")
         self.network.pack_start(self.label,False,True,0)
-        self.gateway = gtk.Entry()
+        self.gateway = Gtk.Entry()
         self.network.pack_start(self.gateway,False,True,0)
         self.network_dialog.vbox.add(self.network)
-        self.network = gtk.HBox()
-        self.label = gtk.Label("                   DNS1: ")
+        self.network = Gtk.HBox()
+        self.label = Gtk.Label("                   DNS1: ")
         self.network.pack_start(self.label,False,True,0)
-        self.dns1 = gtk.Entry()
+        self.dns1 = Gtk.Entry()
         self.network.pack_start(self.dns1,False,True,0)
         self.network_dialog.vbox.add(self.network)
-        self.network = gtk.HBox()
-        self.label = gtk.Label("                   DNS2: ")
+        self.network = Gtk.HBox()
+        self.label = Gtk.Label("                   DNS2: ")
         self.network.pack_start(self.label,False,True,0)
-        self.dns2 = gtk.Entry()
+        self.dns2 = Gtk.Entry()
         self.network.pack_start(self.dns2,False,True,0)
         self.network_dialog.vbox.add(self.network)
 
@@ -843,7 +845,7 @@ class Display_Menu:
 
         self.network_dialog.show_all()
         response = self.network_dialog.run()
-        if response == gtk.RESPONSE_ACCEPT:
+        if response == Gtk.ResponseType.ACCEPT:
             self.network_device = self.network_devices.get_active()
             self.network_name = self.network_devices.get_active_text()
             self.network_dhcp = self.dhcp.get_active()
@@ -887,26 +889,26 @@ class Display_Menu:
             self.dns2.set_sensitive(True)
 
             if self.verify.check_ip(self.ip.get_text()) == False:
-                self.MessageBox(self.window,"<b>Invalid IP Address!</b>",gtk.MESSAGE_ERROR)
+                self.MessageBox(self.window,"<b>Invalid IP Address!</b>",Gtk.MessageType.ERROR)
                 self.network_error = 1
             if self.verify.check_ip(self.netmask.get_text()) == False:
-                self.MessageBox(self.window,"<b>Invalid Netmask!</b>",gtk.MESSAGE_ERROR)
+                self.MessageBox(self.window,"<b>Invalid Netmask!</b>",Gtk.MessageType.ERROR)
                 self.network_error = 1
             if self.verify.check_ip(self.gateway.get_text()) == False:
-                self.MessageBox(self.window,"<b>Invalid Gateway!</b>",gtk.MESSAGE_ERROR)
+                self.MessageBox(self.window,"<b>Invalid Gateway!</b>",Gtk.MessageType.ERROR)
                 self.network_error = 1
             if self.verify.check_ip(self.dns1.get_text()) == False:
-                self.MessageBox(self.window,"<b>Invalid DNS1 Address!</b>",gtk.MESSAGE_ERROR)
+                self.MessageBox(self.window,"<b>Invalid DNS1 Address!</b>",Gtk.MessageType.ERROR)
                 self.network_error = 1
             if self.verify.check_ip(self.dns2.get_text()) == False:
-                self.MessageBox(self.window,"<b>Invalid DNS2 Address!</b>",gtk.MESSAGE_ERROR)
+                self.MessageBox(self.window,"<b>Invalid DNS2 Address!</b>",Gtk.MessageType.ERROR)
                 self.network_error = 1
 
         if self.network_error == 1:
-            self.network_dialog.set_response_sensitive(gtk.RESPONSE_ACCEPT,False)
+            self.network_dialog.set_response_sensitive(Gtk.ResponseType.ACCEPT,False)
             return False    
         else:
-            self.network_dialog.set_response_sensitive(gtk.RESPONSE_ACCEPT,True)
+            self.network_dialog.set_response_sensitive(Gtk.ResponseType.ACCEPT,True)
             return True
 
 
@@ -914,7 +916,7 @@ class Display_Menu:
     def apply_configuration(self,args):
 
         # FIPS 140-2 Configuration
-        if self.fips_kernel.get_active() == True:           
+        if self.fips_kernel.get_active() == True:
             f = open('/tmp/hardening-post','a')
             # Enable FIPS 140-2 mode in Kernel
             f.write('\n/root/hardening/fips-kernel-mode.sh\n')
@@ -950,14 +952,14 @@ class Display_Menu:
                     self.passwd = self.a
                     break
                 else:
-                    self.MessageBox(self.window,"<b>Password too short! 15 Characters Required.</b>",gtk.MESSAGE_ERROR)
+                    self.MessageBox(self.window,"<b>Password too short! 15 Characters Required.</b>",Gtk.MessageType.ERROR)
             else:
-                self.MessageBox(self.window,"<b>Passwords Don't Match!</b>",gtk.MESSAGE_ERROR)
+                self.MessageBox(self.window,"<b>Passwords Don't Match!</b>",Gtk.MessageType.ERROR)
             
         self.error = 0
 
         if self.verify.check_hostname(self.hostname.get_text()) == False:
-            self.MessageBox(self.window,"<b>Invalid Hostname!</b>",gtk.MESSAGE_ERROR)
+            self.MessageBox(self.window,"<b>Invalid Hostname!</b>",Gtk.MessageType.ERROR)
             self.error = 1
 
         # Check Install Disks   
@@ -971,7 +973,7 @@ class Display_Menu:
         self.data["INSTALL_DRIVES"] = self.install_disks[:-1]
         self.data["IGNORE_DRIVES"] = self.ignore_disks[:-1]
         if self.install_disks == "":
-            self.MessageBox(self.window,"<b>Please select at least one install disk!</b>",gtk.MESSAGE_ERROR)
+            self.MessageBox(self.window,"<b>Please select at least one install disk!</b>",Gtk.MessageType.ERROR)
             self.error = 1
 
         # Check LVM Partitioning
@@ -985,38 +987,38 @@ class Display_Menu:
             self.salt = ''
             self.alphabet = '.abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
             for self.i in range(16):
-				self.index = random.randrange(len(self.alphabet))
-				self.salt = self.salt+self.alphabet[self.index]
+                self.index = random.randrange(len(self.alphabet))
+                self.salt = self.salt+self.alphabet[self.index]
 
             # Encrypt Password
             self.salt = '$6$'+self.salt
             self.password = crypt.crypt(self.passwd,self.salt)
 
             # Write Classification Banner Settings
-	    f = open('/tmp/classification-banner','w')
-	    f.write('message = "'+str(self.system_classification.get_active_text())+'"\n')
-	    if int(self.system_classification.get_active()) == 0 or int(self.system_classification.get_active()) == 1:
-		f.write('fgcolor = "#FFFFFF"\n')
-		f.write('bgcolor = "#007A33"\n')
-	    elif int(self.system_classification.get_active()) == 2:
-		f.write('fgcolor = "#FFFFFF"\n')
-		f.write('bgcolor = "#0033A0"\n')
-	    elif int(self.system_classification.get_active()) == 3:
-		f.write('fgcolor = "#FFFFFF"\n')
-		f.write('bgcolor = "#C8102E"\n')
-	    elif int(self.system_classification.get_active()) == 4:
-		f.write('fgcolor = "#FFFFFF"\n')
-		f.write('bgcolor = "#FF671F"\n')
-	    elif int(self.system_classification.get_active()) == 5:
-		f.write('fgcolor = "#FFFFF"\n')
-		f.write('bgcolor = "#F7EA48"\n')
-	    elif int(self.system_classification.get_active()) == 6:
-		f.write('fgcolor = "#000000"\n')
-		f.write('bgcolor = "#F7EA48"\n')
-	    else:
-		f.write('fgcolor = "#FFFFFF"\n')
-		f.write('bgcolor = "#007A33"\n')
-	    f.close()
+            f = open('/tmp/classification-banner','w')
+            f.write('message = "'+str(self.system_classification.get_active_text())+'"\n')
+            if int(self.system_classification.get_active()) == 0 or int(self.system_classification.get_active()) == 1:
+                f.write('fgcolor = "#FFFFFF"\n')
+                f.write('bgcolor = "#007A33"\n')
+            elif int(self.system_classification.get_active()) == 2:
+                f.write('fgcolor = "#FFFFFF"\n')
+                f.write('bgcolor = "#0033A0"\n')
+        elif int(self.system_classification.get_active()) == 3:
+            f.write('fgcolor = "#FFFFFF"\n')
+            f.write('bgcolor = "#C8102E"\n')
+        elif int(self.system_classification.get_active()) == 4:
+            f.write('fgcolor = "#FFFFFF"\n')
+            f.write('bgcolor = "#FF671F"\n')
+        elif int(self.system_classification.get_active()) == 5:
+            f.write('fgcolor = "#FFFFF"\n')
+            f.write('bgcolor = "#F7EA48"\n')
+        elif int(self.system_classification.get_active()) == 6:
+            f.write('fgcolor = "#000000"\n')
+            f.write('bgcolor = "#F7EA48"\n')
+        else:
+            f.write('fgcolor = "#FFFFFF"\n')
+            f.write('bgcolor = "#007A33"\n')
+            f.close()
 
             # Write Kickstart Configuration
             f = open('/tmp/hardening','w')
@@ -1050,10 +1052,10 @@ class Display_Menu:
             if self.www_partition.get_value_as_int() >= 1:
                 f.write('logvol /var/www --fstype=xfs --name=lv_www --vgname=vg1 --percent='+str(self.www_partition.get_value_as_int())+'\n')
             f.close()
-            gtk.main_quit()
+            Gtk.main_quit()
 
 
 # Executes Window Display
 if __name__ == "__main__":
     window = Display_Menu()
-    gtk.main()
+    Gtk.main()
