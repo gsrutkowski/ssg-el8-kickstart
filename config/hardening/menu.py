@@ -72,10 +72,10 @@ class Display_Menu:
         # Initialize Additional Configuration Files
         f = open('/tmp/hardening-post','w')
         f.write('')
-        f.close()
+        #f.close()
         f = open('/tmp/hardening-packages','w')
         f.write('')
-        f.close()
+        #f.close()
     
         # Data Storage
         self.data = {}
@@ -395,12 +395,12 @@ class Display_Menu:
         self.button_bar = Gtk.HBox()
 
         # Apply Configurations
-        self.button1 = Gtk.Button("Ok",Gtk.STOCK_OK)
+        self.button1 = Gtk.Button("Ok",None)
         self.button1.connect("clicked",self.apply_configuration)
         self.button_bar.pack_end(self.button1,False,True,0)
 
         # Help
-        self.button2 = Gtk.Button("Help",Gtk.STOCK_HELP)
+        self.button2 = Gtk.Button("Help",None)
         self.button2.connect("clicked",self.show_help_main)
         self.button_bar.pack_end(self.button2,False,True,0)
 
@@ -444,9 +444,9 @@ class Display_Menu:
 
     # Key Press Event
     def event_key(self,args,event):
-        if event.keyval == Gtk.keysyms.F12: 
+        if event.keyval == Gdk.keyval_from_name("F12"): 
             self.apply_configuration(args)
-        elif event.keyval == Gtk.keysyms.F1:
+        elif event.keyval == Gdk.keyval_from_name("F1"):
             self.show_help_main(args)
 
     # Shows Help for Main Install
@@ -657,15 +657,15 @@ class Display_Menu:
             # Partitioning
             if self.disk_total < 60:
                 self.MessageBox(self.window,"<b>Recommended minimum 60Gb disk space for a RHEL/KVM Server!</b>\n\n You have "+str(self.disk_total)+"Gb available.",Gtk.MessageType.WARNING)
-            self.opt_partition.set_value(0)
-            self.www_partition.set_value(0)
-            self.swap_partition.set_value(2)
-            self.tmp_partition.set_value(3)
-            self.var_partition.set_value(65)
-            self.log_partition.set_value(5)
-            self.audit_partition.set_value(5)
-            self.home_partition.set_value(5)
-            self.root_partition.set_value(15)
+                self.opt_partition.set_value(0)
+                self.www_partition.set_value(0)
+                self.swap_partition.set_value(2)
+                self.tmp_partition.set_value(3)
+                self.var_partition.set_value(65)
+                self.log_partition.set_value(5)
+                self.audit_partition.set_value(5)
+                self.home_partition.set_value(5)
+                self.root_partition.set_value(15)
             # Post Configuration (nochroot)
             f = open('/tmp/hardening-post-nochroot','w')
             f.write('')
@@ -920,13 +920,13 @@ class Display_Menu:
             f = open('/tmp/hardening-post','a')
             # Enable FIPS 140-2 mode in Kernel
             f.write('\n/root/hardening/fips-kernel-mode.sh\n')
-            f.close()
+            #f.close()
         else:
             f = open('/tmp/hardening-post','a')
             # Disable FIPS 140-2 mode in Kernel
             f.write('\ngrubby --update-kernel=ALL --remove-args="fips=1"\n')
             f.write('\n/usr/bin/sed -i "s/ fips=1//" /etc/default/grub\n')
-            f.close()
+            #f.close()
 
         # Disable USB (nousb kernel option)
         if self.nousb_kernel.get_active() == True:
@@ -934,13 +934,13 @@ class Display_Menu:
             # Enable nousb mode in Kernel
             f.write('\ngrubby --update-kernel=ALL --args="nousb"\n')
             f.write('\n/usr/bin/sed -i "s/ quiet/quiet nousb/" /etc/default/grub\n')
-            f.close()
+            #f.close()
         else:
             f = open('/tmp/hardening-post','a')
             # Disable nousb mode in Kernel
             f.write('\ngrubby --update-kernel=ALL --remove-args="nousb"\n')
             f.write('\n/usr/bin/sed -i "s/ nousb//" /etc/default/grub\n')
-            f.close()
+            #f.close()
 
         # Set system password
         while True:
@@ -995,7 +995,7 @@ class Display_Menu:
             self.password = crypt.crypt(self.passwd,self.salt)
 
             # Write Classification Banner Settings
-            f = open('/tmp/classification-banner','w')
+            f = open('/tmp/classification-banner','a')
             f.write('message = "'+str(self.system_classification.get_active_text())+'"\n')
             if int(self.system_classification.get_active()) == 0 or int(self.system_classification.get_active()) == 1:
                 f.write('fgcolor = "#FFFFFF"\n')
@@ -1003,25 +1003,25 @@ class Display_Menu:
             elif int(self.system_classification.get_active()) == 2:
                 f.write('fgcolor = "#FFFFFF"\n')
                 f.write('bgcolor = "#0033A0"\n')
-        elif int(self.system_classification.get_active()) == 3:
-            f.write('fgcolor = "#FFFFFF"\n')
-            f.write('bgcolor = "#C8102E"\n')
-        elif int(self.system_classification.get_active()) == 4:
-            f.write('fgcolor = "#FFFFFF"\n')
-            f.write('bgcolor = "#FF671F"\n')
-        elif int(self.system_classification.get_active()) == 5:
-            f.write('fgcolor = "#FFFFF"\n')
-            f.write('bgcolor = "#F7EA48"\n')
-        elif int(self.system_classification.get_active()) == 6:
-            f.write('fgcolor = "#000000"\n')
-            f.write('bgcolor = "#F7EA48"\n')
-        else:
-            f.write('fgcolor = "#FFFFFF"\n')
+            elif int(self.system_classification.get_active()) == 3:
+                f.write('fgcolor = "#FFFFFF"\n')
+                f.write('bgcolor = "#C8102E"\n')
+            elif int(self.system_classification.get_active()) == 4:
+                f.write('fgcolor = "#FFFFFF"\n')
+                f.write('bgcolor = "#FF671F"\n')
+            elif int(self.system_classification.get_active()) == 5:
+                f.write('fgcolor = "#FFFFF"\n')
+                f.write('bgcolor = "#F7EA48"\n')
+            elif int(self.system_classification.get_active()) == 6:
+                f.write('fgcolor = "#000000"\n')
+                f.write('bgcolor = "#F7EA48"\n')
+            else:
+                f.write('fgcolor = "#FFFFFF"\n')
             f.write('bgcolor = "#007A33"\n')
             f.close()
 
             # Write Kickstart Configuration
-            f = open('/tmp/hardening','w')
+            f = open('/tmp/hardening','a')
             f.write('network --hostname '+self.hostname.get_text()+'\n')
             f.write('rootpw --iscrypted '+str(self.password)+' --lock\n') 
             f.write('bootloader --location=mbr --driveorder='+str(self.data["INSTALL_DRIVES"])+' --append="crashkernel=auto rhgb quiet audit=1" --password='+str(self.a)+'\n') 
@@ -1030,23 +1030,23 @@ class Display_Menu:
             f = open('/tmp/partitioning','w')
             if self.data["IGNORE_DRIVES"] != "":
                 f.write('ignoredisk --drives='+str(self.data["IGNORE_DRIVES"])+'\n')
-            f.write('zerombr\n')
-            f.write('clearpart --all --drives='+str(self.data["INSTALL_DRIVES"])+'\n')
+                f.write('zerombr\n')
+                f.write('clearpart --all --drives='+str(self.data["INSTALL_DRIVES"])+'\n')
             if self.encrypt_disk.get_active() == True:
                 f.write('part pv.01 --grow --size=200 --encrypted --cipher=\'aes-xts-plain64\' --passphrase='+str(self.passwd)+'\n')
             else:
                 f.write('part pv.01 --grow --size=200\n')
-            f.write('part /boot --fstype=xfs --size=1024\n')
+                f.write('part /boot --fstype=xfs --size=1024\n')
             if os.path.isdir('/sys/firmware/efi'):
                 f.write('part /boot/efi --fstype=efi --size=200\n')
-            f.write('volgroup vg1 --pesize=4096 pv.01\n')
-            f.write('logvol / --fstype=xfs --name=lv_root --vgname=vg1 --percent='+str(self.root_partition.get_value_as_int())+'\n')
-            f.write('logvol /home --fstype=xfs --name=lv_home --vgname=vg1 --percent='+str(self.home_partition.get_value_as_int())+'\n')
-            f.write('logvol /tmp --fstype=xfs --name=lv_tmp --vgname=vg1 --percent='+str(self.tmp_partition.get_value_as_int())+'\n')
-            f.write('logvol /var --fstype=xfs --name=lv_var --vgname=vg1 --percent='+str(self.var_partition.get_value_as_int())+'\n')
-            f.write('logvol /var/log --fstype=xfs --name=lv_log --vgname=vg1 --percent='+str(self.log_partition.get_value_as_int())+'\n')
-            f.write('logvol /var/log/audit --fstype=xfs --name=lv_audit --vgname=vg1 --percent='+str(self.audit_partition.get_value_as_int())+'\n')
-            f.write('logvol swap --fstype=swap --name=lv_swap --vgname=vg1 --maxsize=4096 --percent='+str(self.swap_partition.get_value_as_int())+'\n')
+                f.write('volgroup vg1 --pesize=4096 pv.01\n')
+                f.write('logvol / --fstype=xfs --name=lv_root --vgname=vg1 --percent='+str(self.root_partition.get_value_as_int())+'\n')
+                f.write('logvol /home --fstype=xfs --name=lv_home --vgname=vg1 --percent='+str(self.home_partition.get_value_as_int())+'\n')
+                f.write('logvol /tmp --fstype=xfs --name=lv_tmp --vgname=vg1 --percent='+str(self.tmp_partition.get_value_as_int())+'\n')
+                f.write('logvol /var --fstype=xfs --name=lv_var --vgname=vg1 --percent='+str(self.var_partition.get_value_as_int())+'\n')
+                f.write('logvol /var/log --fstype=xfs --name=lv_log --vgname=vg1 --percent='+str(self.log_partition.get_value_as_int())+'\n')
+                f.write('logvol /var/log/audit --fstype=xfs --name=lv_audit --vgname=vg1 --percent='+str(self.audit_partition.get_value_as_int())+'\n')
+                f.write('logvol swap --fstype=swap --name=lv_swap --vgname=vg1 --maxsize=4096 --percent='+str(self.swap_partition.get_value_as_int())+'\n')
             if self.opt_partition.get_value_as_int() >= 1:
                 f.write('logvol /opt --fstype=xfs --name=lv_opt --vgname=vg1 --percent='+str(self.opt_partition.get_value_as_int())+'\n')
             if self.www_partition.get_value_as_int() >= 1:
