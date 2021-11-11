@@ -1,3 +1,5 @@
 # Ignore ISO
 *.iso
 install.img
+.vscode/*
+.vscode
